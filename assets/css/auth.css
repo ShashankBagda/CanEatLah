@@ -1,0 +1,81 @@
+.auth-wrap {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(380px, 560px);
+}
+
+.auth-brand {
+  padding: 2.1rem 2.3rem;
+  color: #f5fbff;
+  background:
+    radial-gradient(600px 320px at 10% 10%, rgba(18, 165, 148, 0.28), transparent 50%),
+    radial-gradient(500px 300px at 90% 20%, rgba(88, 153, 210, 0.36), transparent 52%),
+    linear-gradient(150deg, #0a3d63, #0a2e4b 58%, #072237);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.auth-brand h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.8rem, 2.4vw + 1rem, 2.6rem);
+}
+
+.auth-brand p {
+  margin: 0;
+  opacity: 0.9;
+  max-width: 44ch;
+}
+
+.auth-brand ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+  opacity: 0.95;
+}
+
+.auth-main {
+  background: transparent;
+  display: grid;
+  align-items: center;
+  padding: 1.25rem 0;
+}
+
+.back-home {
+  color: #d8ecf8;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.role-badge {
+  margin-bottom: 0.75rem;
+}
+
+.helper-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.helper-links a {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1040px) {
+  .auth-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-brand {
+    min-height: 240px;
+    padding: 1.45rem;
+  }
+
+  .auth-main {
+    padding: 0.8rem 0 1.25rem;
+  }
+}

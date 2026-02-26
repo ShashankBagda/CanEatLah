@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Admin: <span id="adminName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1>Admin Control Center</h1>
+          <p>Verification and operations overview for users, reports, restaurants, and menu quality.</p>
+        </div>
+      </div>
+
+      <nav class="portal-nav">
+        <a class="active" href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-verify-users.html">Verify Users</a>
+        <a href="admin-verify-restaurants.html">Verify Restaurants</a>
+        <a href="admin-crud.html">CRUD Operations</a>
+      </nav>
+
+      <section class="metric-grid">
+        <article class="card metric-card"><p class="metric-label">Pending Users</p><p class="metric-value" id="metricPendingUsers">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Pending Reports</p><p class="metric-value" id="metricPendingReports">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Pending Restaurants</p><p class="metric-value" id="metricPendingRestaurants">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Pending Menu Items</p><p class="metric-value" id="metricPendingMenu">0</p></article>
+      </section>
+
+      <section class="metric-grid">
+        <article class="card metric-card"><p class="metric-label">Total Users</p><p class="metric-value" id="metricTotalUsers">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Total Restaurants</p><p class="metric-value" id="metricTotalRestaurants">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Total Orders</p><p class="metric-value" id="metricTotalOrders">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Total Reservations</p><p class="metric-value" id="metricTotalReservations">0</p></article>
+      </section>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Pending User Verifications</h2>
+          <div id="pendingUsersList"></div>
+          <div class="split-actions"><a class="btn btn-secondary" href="admin-verify-users.html">Go To User Verification</a></div>
+        </article>
+
+        <article class="card panel">
+          <h2>Pending Report Verifications</h2>
+          <div id="pendingReportsList"></div>
+          <div class="split-actions"><a class="btn btn-secondary" href="admin-verify-users.html">Go To Report Verification</a></div>
+        </article>
+      </section>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Pending Restaurant/Menu Verification</h2>
+        <div id="pendingRestaurantList"></div>
+        <div class="split-actions"><a class="btn btn-secondary" href="admin-verify-restaurants.html">Go To Restaurant Verification</a></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script>
+    if (window.appAuth.requireRole("admin")) {
+      window.adminPortal.initDashboard();
+    }
+  </script>
+</body>
+</html>
+
+

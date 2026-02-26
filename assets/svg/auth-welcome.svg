@@ -1,0 +1,24 @@
+<svg width="340" height="220" viewBox="0 0 340 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12A594"/>
+      <stop offset="1" stop-color="#0B4F7F"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="18" y="16" width="304" height="188" rx="28" fill="#0C3D63" fill-opacity="0.26" stroke="#6FA7CD" stroke-opacity="0.45"/>
+  <circle cx="84" cy="64" r="22" fill="#1E5F89" fill-opacity="0.5"/>
+  <circle cx="252" cy="152" r="30" fill="#1F8E84" fill-opacity="0.48"/>
+
+  <rect x="92" y="44" width="156" height="16" rx="8" fill="#2B6D97" fill-opacity="0.8"/>
+  <rect x="112" y="66" width="116" height="10" rx="5" fill="#3A7CA7" fill-opacity="0.7"/>
+
+  <circle cx="170" cy="128" r="44" fill="#103B5D" stroke="#77B8D9" stroke-width="2"/>
+  <circle cx="170" cy="128" r="29" fill="#0F4C75"/>
+  <path d="M156 126C156 118 162 112 170 112C178 112 184 118 184 126V132H156V126Z" fill="#12A594"/>
+  <rect x="152" y="132" width="36" height="22" rx="7" fill="url(#wg)"/>
+  <circle cx="170" cy="143" r="4" fill="#E9F8FF"/>
+
+  <path d="M110 166L116 174L126 176L118 183L120 193L110 188L100 193L102 183L94 176L104 174L110 166Z" fill="#12A594"/>
+  <path d="M234 90L240 98L250 100L242 107L244 117L234 112L224 117L226 107L218 100L228 98L234 90Z" fill="#7ED2C8"/>
+</svg>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diner Survey | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div><h1>Food Preference Survey</h1><p>Tell us what you enjoy and what to avoid.</p></div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="diner-dashboard.html">Dashboard</a>
+        <a class="active" href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a href="diner-profile.html">Profile</a>
+      </nav>
+
+      <article class="card panel">
+        <form id="surveyForm" class="form-grid" novalidate>
+          <div class="field">
+            <label>Favorite Cuisines</label>
+            <div class="option-grid compact">
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Indian" /> Indian</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Healthy" /> Healthy</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Vegan" /> Vegan</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Seafood" /> Seafood</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Italian" /> Italian</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Japanese" /> Japanese</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Thai" /> Thai</label>
+              <label class="option-pill"><input type="checkbox" name="favoriteCuisine" value="Mexican" /> Mexican</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Diet Preferences (multiple allowed)</label>
+            <div class="option-grid">
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Vegetarian" /> Vegetarian</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Vegan" /> Vegan</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Pescatarian" /> Pescatarian</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="High Protein" /> High Protein</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Low Carb" /> Low Carb</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Keto Friendly" /> Keto Friendly</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Gluten Free" /> Gluten Free</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Dairy Free" /> Dairy Free</label>
+              <label class="option-pill"><input type="checkbox" name="dietPreference" value="Jain" /> Jain</label>
+            </div>
+          </div>
+
+          <div class="inline-three">
+            <div class="field">
+              <label for="spiceLevel">Spice Level</label>
+              <select id="spiceLevel" name="spiceLevel">
+                <option value="none">No Spice</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sugarLevel">Sugar Level</label>
+              <select id="sugarLevel" name="sugarLevel">
+                <option value="none">No Added Sugar</option>
+                <option value="low">Low Sugar</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="budget">Budget Preference</label>
+              <select id="budget" name="budget">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Known Allergies (multiple selection)</label>
+            <div class="option-grid option-scroll">
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="peanut" /> Peanut</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="tree nut" /> Tree Nut</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="dairy" /> Dairy</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="egg" /> Egg</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="fish" /> Fish</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="shellfish" /> Shellfish</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="soy" /> Soy</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="wheat" /> Wheat</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="gluten" /> Gluten</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="sesame" /> Sesame</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="mustard" /> Mustard</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="celery" /> Celery</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="sulfites" /> Sulfites</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="corn" /> Corn</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="chickpea" /> Chickpea</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="lentil" /> Lentil</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="coconut" /> Coconut</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="kiwi" /> Kiwi</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="strawberry" /> Strawberry</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="banana" /> Banana</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="lupin" /> Lupin</label>
+              <label class="option-pill"><input type="checkbox" name="allergyOption" value="mollusks" /> Mollusks</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="customAllergies">Other Allergies (comma separated)</label>
+            <input id="customAllergies" name="customAllergies" type="text" placeholder="Example: Garlic, Avocado" />
+          </div>
+
+          <div class="field">
+            <label for="notes">Additional Notes</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Any extra dietary notes"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Survey</button>
+            <a class="btn btn-secondary" href="diner-restaurants.html">Use Preferences for Search</a>
+          </div>
+          <div id="surveyMessage" class="form-message" aria-live="polite"></div>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initSurvey();
+    }
+  </script>
+</body>
+</html>

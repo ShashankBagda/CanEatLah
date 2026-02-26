@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diner Profile | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div><h1>Profile Settings</h1><p>Manage personal details used for dining recommendations.</p></div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="diner-dashboard.html">Dashboard</a>
+        <a href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a class="active" href="diner-profile.html">Profile</a>
+      </nav>
+
+      <article class="card panel">
+        <form id="profileForm" class="form-grid" novalidate>
+          <div class="inline-two">
+            <div class="field">
+              <label for="fullName">Full Name</label>
+              <input id="fullName" name="fullName" type="text" required />
+            </div>
+            <div class="field">
+              <label for="username">Username</label>
+              <input id="username" name="username" type="text" readonly />
+            </div>
+          </div>
+
+          <div class="inline-two">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" readonly />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" />
+            </div>
+          </div>
+
+          <div class="inline-two">
+            <div class="field">
+              <label for="emergencyContact">Emergency Contact</label>
+              <input id="emergencyContact" name="emergencyContact" type="text" />
+            </div>
+            <div class="field">
+              <label for="address">Address</label>
+              <input id="address" name="address" type="text" />
+            </div>
+          </div>
+
+          <div class="inline-two">
+            <div class="field">
+              <label for="allergiesView">Current Allergies</label>
+              <input id="allergiesView" name="allergiesView" type="text" readonly />
+              <small>Update allergies from Survey or Medical Reports page.</small>
+            </div>
+            <div class="field">
+              <label for="preferencesView">Current Preferences</label>
+              <input id="preferencesView" name="preferencesView" type="text" readonly />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+          </div>
+          <div id="profileMessage" class="form-message" aria-live="polite"></div>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initProfile();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

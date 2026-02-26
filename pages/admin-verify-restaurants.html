@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Restaurants | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Admin: <span id="adminName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1>Restaurant and Menu Verification</h1>
+          <p>Verify restaurant registration and ingredient-level menu quality.</p>
+        </div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-verify-users.html">Verify Users</a>
+        <a class="active" href="admin-verify-restaurants.html">Verify Restaurants</a>
+        <a href="admin-crud.html">CRUD Operations</a>
+      </nav>
+
+      <article class="card panel">
+        <h2>Restaurant Verification</h2>
+        <div id="restaurantVerifyTable"></div>
+      </article>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Menu Item Verification</h2>
+        <div id="menuVerifyTable"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script>
+    if (window.appAuth.requireRole("admin")) {
+      window.adminPortal.initVerifyRestaurants();
+    }
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart and Checkout | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div><h1>Cart and Checkout</h1><p>Review your order and place it.</p></div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="diner-dashboard.html">Dashboard</a>
+        <a href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a class="active" href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a href="diner-profile.html">Profile</a>
+      </nav>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Cart Items</h2>
+          <p class="small-note">Restaurant: <strong id="cartRestaurant">-</strong></p>
+          <div id="cartTable"></div>
+        </article>
+
+        <article class="card panel">
+          <h2>Checkout</h2>
+          <div class="field">
+            <label for="checkoutGroup">Dining Context</label>
+            <select id="checkoutGroup"></select>
+          </div>
+          <div class="field">
+            <label for="checkoutNotes">Order Notes</label>
+            <textarea id="checkoutNotes" rows="3" placeholder="Special instructions"></textarea>
+          </div>
+          <ul class="list-clean">
+            <li>Subtotal: <strong id="checkoutSubtotal">$0.00</strong></li>
+            <li>Service Fee: <strong id="checkoutFee">$0.00</strong></li>
+            <li>Total: <strong id="checkoutTotal">$0.00</strong></li>
+          </ul>
+          <div class="form-actions">
+            <button id="checkoutBtn" class="btn btn-primary" type="button">Place Order</button>
+            <a class="btn btn-secondary" href="diner-restaurants.html">Add More Items</a>
+          </div>
+          <div id="checkoutMessage" class="form-message" aria-live="polite"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initCartCheckout();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

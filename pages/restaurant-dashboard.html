@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Dashboard | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Owner: <span id="ownerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1 id="restaurantName">Restaurant Dashboard</h1>
+          <p id="restaurantMeta">Cuisine | Location</p>
+        </div>
+        <a class="btn btn-primary" href="restaurant-menu.html">Manage Menu</a>
+      </div>
+
+      <nav class="portal-nav">
+        <a class="active" href="restaurant-dashboard.html">Dashboard</a>
+        <a href="restaurant-menu.html">Menu</a>
+        <a href="restaurant-orders.html">Orders</a>
+        <a href="restaurant-reservations.html">Reservations</a>
+      </nav>
+
+      <section class="metric-grid">
+        <article class="card metric-card"><p class="metric-label">Menu Items</p><p class="metric-value" id="metricMenu">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Pending Orders</p><p class="metric-value" id="metricOrders">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Pending Reservations</p><p class="metric-value" id="metricReservations">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Total Revenue</p><p class="metric-value" id="metricRevenue">$0.00</p></article>
+      </section>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Recent Orders</h2>
+          <div id="recentOrders"></div>
+          <div class="split-actions"><a class="btn btn-secondary" href="restaurant-orders.html">Open Orders Inbox</a></div>
+        </article>
+
+        <article class="card panel">
+          <h2>Recent Reservations</h2>
+          <div id="recentReservations"></div>
+          <div class="split-actions"><a class="btn btn-secondary" href="restaurant-reservations.html">Open Reservation Inbox</a></div>
+        </article>
+      </section>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Restaurant Profile</h2>
+        <form id="restaurantProfileForm" class="form-grid" novalidate>
+          <div class="inline-two">
+            <div class="field"><label for="name">Restaurant Name</label><input id="name" name="name" type="text" required /></div>
+            <div class="field"><label for="cuisine">Cuisine</label><input id="cuisine" name="cuisine" type="text" required /></div>
+          </div>
+          <div class="inline-two">
+            <div class="field"><label for="location">Location</label><input id="location" name="location" type="text" required /></div>
+            <div class="field">
+              <label for="priceBand">Price Band</label>
+              <select id="priceBand" name="priceBand">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label for="tags">Search Tags (comma separated)</label><input id="tags" name="tags" type="text" placeholder="family, vegan, quick-service" /></div>
+          <div class="field"><label for="description">Description</label><textarea id="description" name="description" rows="3"></textarea></div>
+          <div class="form-actions"><button type="submit" class="btn btn-primary">Save Restaurant Profile</button></div>
+          <div id="profileMessage" class="form-message" aria-live="polite"></div>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/restaurant.js"></script>
+  <script>
+    if (window.appAuth.requireRole("restaurant")) {
+      window.restaurantPortal.initDashboard();
+    }
+  </script>
+</body>
+</html>
+
+

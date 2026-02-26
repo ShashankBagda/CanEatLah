@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diner Sign Up | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+<body>
+  <main class="auth-wrap">
+    <section class="auth-brand">
+      <div>
+        <a class="back-home" href="../index.html">&larr; Back to Home</a>
+        <h1>Create your Diner account</h1>
+        <p>Start building your allergy-aware profile and get safer dining recommendations.</p>
+      </div>
+      <ul>
+        <li>Food preference survey support</li>
+        <li>Medical report upload workflow</li>
+        <li>Solo and group recommendation paths</li>
+      </ul>
+    </section>
+
+    <section class="auth-main">
+      <div class="form-shell card">
+        <span class="status soft role-badge">Role: <span id="roleLabel">Diner</span></span>
+        <h1>Diner Sign Up</h1>
+        <p>Create your account and continue to your diner dashboard.</p>
+
+        <form id="signupForm" class="form-grid" novalidate>
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" placeholder="Choose a unique username" required />
+            <small>This helps friends add you into dining groups.</small>
+          </div>
+
+          <div class="field">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" name="fullName" type="text" placeholder="Enter your full name" required />
+          </div>
+
+          <div class="inline-two">
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div class="field">
+              <label for="phone">Phone Number</label>
+              <input id="phone" name="phone" type="tel" placeholder="+1 123 456 7890" />
+            </div>
+          </div>
+
+          <div class="inline-two">
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="At least 6 characters" required />
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm Password</label>
+              <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Re-enter password" required />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Create Diner Account</button>
+          </div>
+        </form>
+
+        <div id="signupMessage" class="form-message" aria-live="polite"></div>
+        <p class="form-alt-link">
+          Already have an account? <a href="signin.html">Sign in here</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script>
+    window.appAuth.initSignup({ role: "diner" });
+  </script>
+</body>
+</html>
+
+

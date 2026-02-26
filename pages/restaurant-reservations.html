@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Reservations | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Owner: <span id="ownerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div><h1>Reservation Inbox</h1><p>Restaurant: <strong id="restaurantName">-</strong></p></div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="restaurant-dashboard.html">Dashboard</a>
+        <a href="restaurant-menu.html">Menu</a>
+        <a href="restaurant-orders.html">Orders</a>
+        <a class="active" href="restaurant-reservations.html">Reservations</a>
+      </nav>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Add Reservation</h2>
+          <p class="small-note">Use this to capture call-in or walk-in reservations until diner-side reservation UI is added.</p>
+          <form id="reservationForm" class="form-grid" novalidate>
+            <div class="inline-two">
+              <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="customerName" type="text" required /></div>
+              <div class="field"><label for="contact">Contact</label><input id="contact" name="contact" type="text" placeholder="email or phone" /></div>
+            </div>
+            <div class="inline-two">
+              <div class="field"><label for="datetime">Date & Time</label><input id="datetime" name="datetime" type="datetime-local" required /></div>
+              <div class="field"><label for="partySize">Party Size</label><input id="partySize" name="partySize" type="number" min="1" value="2" /></div>
+            </div>
+            <div class="field"><label for="notes">Notes</label><textarea id="notes" name="notes" rows="3"></textarea></div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary">Save Reservation</button></div>
+            <div id="reservationMessage" class="form-message" aria-live="polite"></div>
+          </form>
+        </article>
+
+        <article class="card panel">
+          <h2>Reservations</h2>
+          <div id="reservationsTable"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/restaurant.js"></script>
+  <script>
+    if (window.appAuth.requireRole("restaurant")) {
+      window.restaurantPortal.initReservations();
+    }
+  </script>
+</body>
+</html>
+
+

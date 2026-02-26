@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diner Dashboard | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1>Welcome, <span id="welcomeName">Diner</span></h1>
+          <p>Your allergy-safe dining overview.</p>
+        </div>
+        <a class="btn btn-primary" href="diner-restaurants.html">Find Restaurants</a>
+      </div>
+
+      <nav class="portal-nav">
+        <a class="active" href="diner-dashboard.html">Dashboard</a>
+        <a href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a href="diner-profile.html">Profile</a>
+      </nav>
+
+      <section class="metric-grid">
+        <article class="card metric-card"><p class="metric-label">Total Orders</p><p class="metric-value" id="metricOrders">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Medical Reports</p><p class="metric-value" id="metricReports">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Dining Groups</p><p class="metric-value" id="metricGroups">0</p></article>
+        <article class="card metric-card"><p class="metric-label">Tracked Allergies</p><p class="metric-value" id="metricAllergies">0</p></article>
+      </section>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Profile Snapshot</h2>
+          <p>Active Group: <strong id="activeGroupName">None</strong></p>
+          <h3>Preferred Cuisines</h3>
+          <div class="chip-row" id="prefChips"></div>
+          <h3>Diet Preferences</h3>
+          <div class="chip-row" id="dietChips"></div>
+          <p class="small-note" id="tasteLevels">Spice: Medium | Sugar: Medium</p>
+          <h3>Allergies</h3>
+          <div class="chip-row" id="allergyChips"></div>
+          <div class="split-actions">
+            <a class="btn btn-secondary" href="diner-survey.html">Update Survey</a>
+            <a class="btn btn-secondary" href="diner-profile.html">Edit Profile</a>
+          </div>
+        </article>
+
+        <article class="card panel">
+          <h2>Recent Orders</h2>
+          <div id="recentOrders"></div>
+        </article>
+      </section>
+
+      <section class="card panel" style="margin-top: 0.9rem;">
+        <h2>Recommended Restaurants</h2>
+        <p>Based on your current profile and active group context.</p>
+        <div id="recommendList"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initDashboard();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

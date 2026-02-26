@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin CRUD | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Admin: <span id="adminName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1>CRUD Operations</h1>
+          <p>Create and delete users, restaurants, and menu items.</p>
+        </div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-verify-users.html">Verify Users</a>
+        <a href="admin-verify-restaurants.html">Verify Restaurants</a>
+        <a class="active" href="admin-crud.html">CRUD Operations</a>
+      </nav>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Create User</h2>
+          <form id="createUserForm" class="form-grid" novalidate>
+            <div class="inline-two">
+              <div class="field">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                  <option value="diner">Diner</option>
+                  <option value="restaurant">Restaurant Owner</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="verifiedStatus">Verification Status</label>
+                <select id="verifiedStatus" name="verifiedStatus">
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+            <div class="inline-two">
+              <div class="field"><label for="fullName">Full Name</label><input id="fullName" name="fullName" type="text" required /></div>
+              <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required /></div>
+            </div>
+            <div class="inline-two">
+              <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" type="text" /></div>
+              <div class="field"><label for="password">Password</label><input id="password" name="password" type="text" placeholder="Default Pass@123" /></div>
+            </div>
+            <h3>Restaurant Owner Details (if role is restaurant)</h3>
+            <div class="inline-two">
+              <div class="field"><label for="restaurantName">Restaurant Name</label><input id="restaurantName" name="restaurantName" type="text" /></div>
+              <div class="field"><label for="cuisine">Cuisine</label><input id="cuisine" name="cuisine" type="text" /></div>
+            </div>
+            <div class="inline-two">
+              <div class="field"><label for="location">Location</label><input id="location" name="location" type="text" /></div>
+              <div class="field">
+                <label for="priceBand">Price Band</label>
+                <select id="priceBand" name="priceBand">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="description">Description</label><textarea id="description" name="description" rows="2"></textarea></div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary">Create User</button></div>
+            <div id="crudUserMessage" class="form-message" aria-live="polite"></div>
+          </form>
+        </article>
+
+        <article class="card panel">
+          <h2>Create Restaurant</h2>
+          <form id="createRestaurantForm" class="form-grid" novalidate>
+            <div class="field"><label for="rOwnerId">Owner User ID (optional)</label><input id="rOwnerId" name="ownerId" type="text" placeholder="restaurant_xxx" /></div>
+            <div class="inline-two">
+              <div class="field"><label for="rName">Restaurant Name</label><input id="rName" name="name" type="text" required /></div>
+              <div class="field"><label for="rCuisine">Cuisine</label><input id="rCuisine" name="cuisine" type="text" /></div>
+            </div>
+            <div class="inline-two">
+              <div class="field"><label for="rLocation">Location</label><input id="rLocation" name="location" type="text" /></div>
+              <div class="field">
+                <label for="rPriceBand">Price Band</label>
+                <select id="rPriceBand" name="priceBand">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="rTags">Tags (comma separated)</label><input id="rTags" name="tags" type="text" placeholder="vegan, family" /></div>
+            <div class="field"><label for="rDescription">Description</label><textarea id="rDescription" name="description" rows="2"></textarea></div>
+            <div class="field">
+              <label for="rVerificationStatus">Verification Status</label>
+              <select id="rVerificationStatus" name="verificationStatus">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary">Create Restaurant</button></div>
+            <div id="crudRestaurantMessage" class="form-message" aria-live="polite"></div>
+          </form>
+        </article>
+      </section>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Users (Delete)</h2>
+        <div id="crudUserTable"></div>
+      </article>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Restaurants (Delete)</h2>
+        <div id="crudRestaurantTable"></div>
+      </article>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Menu Items (Delete)</h2>
+        <div id="crudMenuTable"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script>
+    if (window.appAuth.requireRole("admin")) {
+      window.adminPortal.initCrud();
+    }
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+<body>
+  <main class="auth-wrap">
+    <section class="auth-brand">
+      <div>
+        <a class="back-home" href="../index.html">&larr; Back to Home</a>
+        <h1>Welcome back to CanEatLah</h1>
+        <p>Continue to your portal to manage safe dining, menus, and verification workflows.</p>
+      </div>
+      <ul>
+        <li>Diner, Restaurant Owner, and Admin role support</li>
+        <li>Allergy-aware planning and verified food details</li>
+        <li>Transparent experience from profile to order</li>
+      </ul>
+    </section>
+
+    <section class="auth-main">
+      <div class="form-shell card">
+        <span class="status soft role-badge">Secure Sign In</span>
+        <h1>Sign In</h1>
+        <p>Use the role and credentials linked to your account.</p>
+
+        <form id="signinForm" class="form-grid" novalidate>
+          <div class="field">
+            <label for="role">Portal Role</label>
+            <select id="role" name="role" required>
+              <option value="">Select role</option>
+              <option value="diner">Diner</option>
+              <option value="restaurant">Restaurant Owner</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter your password" required />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <div class="helper-links">
+              <a href="signup-diner.html">Diner Sign Up</a>
+              <a href="signup-restaurant.html">Restaurant Sign Up</a>
+              <a href="signup-admin.html">Admin Sign Up</a>
+            </div>
+          </div>
+        </form>
+
+        <div id="signinMessage" class="form-message" aria-live="polite"></div>
+        <p class="form-alt-link">
+          Demo login:
+          <code>diner@caneatlah.local</code>,
+          <code>restaurant@caneatlah.local</code>,
+          <code>admin@caneatlah.local</code>
+          with password <code>Pass@123</code>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script>
+    window.appAuth.initSignIn();
+  </script>
+</body>
+</html>
+
+

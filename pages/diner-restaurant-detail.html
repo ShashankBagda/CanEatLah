@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Menu | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div>
+          <h1 id="restaurantName">Restaurant</h1>
+          <p id="restaurantMeta">Cuisine | Location | Price</p>
+          <p class="small-note" id="restaurantDescription"></p>
+        </div>
+        <a class="btn btn-secondary" href="diner-restaurants.html">Back to Search</a>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="diner-dashboard.html">Dashboard</a>
+        <a href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a class="active" href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a href="diner-profile.html">Profile</a>
+      </nav>
+
+      <article class="card panel">
+        <div class="inline-two">
+          <div class="field">
+            <label for="groupPick">Recommendation Context</label>
+            <select id="groupPick"></select>
+          </div>
+          <div>
+            <label>Current Allergy Context</label>
+            <div class="chip-row" id="allergyContext"></div>
+          </div>
+        </div>
+        <div id="detailMessage" class="form-message" aria-live="polite"></div>
+      </article>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Menu</h2>
+        <div id="menuContainer"></div>
+      </article>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Cart Snapshot</h2>
+        <div id="cartSnapshot"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initRestaurantDetail();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

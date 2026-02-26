@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dining Groups | CanEatLah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/visuals.css" />
+  <link rel="stylesheet" href="../assets/css/experience.css" />
+  <link rel="stylesheet" href="../assets/css/portal.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
+      <nav class="header-nav">
+        <span class="status soft">Diner: <span id="dinerName">-</span></span>
+        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-shell">
+    <section class="container">
+      <div class="portal-top">
+        <div><h1>Group Dining</h1><p>Create groups like chat rooms and get combined recommendations in one place.</p></div>
+      </div>
+
+      <nav class="portal-nav">
+        <a href="diner-dashboard.html">Dashboard</a>
+        <a href="diner-survey.html">Survey</a>
+        <a href="diner-medical-upload.html">Medical Reports</a>
+        <a href="diner-restaurants.html">Restaurants</a>
+        <a href="diner-ai-recommendations.html">AI Recommendations</a>
+        <a class="active" href="diner-groups.html">Groups</a>
+        <a href="diner-order-history.html">Order History</a>
+        <a href="diner-profile.html">Profile</a>
+      </nav>
+
+      <section class="two-col">
+        <article class="card panel">
+          <h2>Add Members By Username or Phone</h2>
+          <p class="small-note">Search registered diners and add them to the draft group.</p>
+          <form id="memberLookupForm" class="form-grid" novalidate>
+            <div class="field">
+              <label for="memberLookup">Username / Phone</label>
+              <input id="memberLookup" name="memberLookup" type="text" placeholder="e.g. @demodiner or 1234567890" />
+            </div>
+            <button type="submit" class="btn btn-secondary">Quick Add First Match</button>
+          </form>
+
+          <h3 style="margin-top: 1rem;">Search Results</h3>
+          <div id="lookupResults"></div>
+
+          <h3 style="margin-top: 1rem;">Draft Members</h3>
+          <div id="draftMembers"></div>
+        </article>
+
+        <article class="card panel">
+          <h2>Create Group</h2>
+          <form id="groupForm" class="form-grid" novalidate>
+            <div class="field">
+              <label for="groupName">Group Name</label>
+              <input id="groupName" name="groupName" type="text" placeholder="Friday Dinner Team" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Create Group</button>
+          </form>
+          <div id="groupMessage" class="form-message" aria-live="polite"></div>
+
+          <h3 style="margin-top: 1rem;">Saved Groups</h3>
+          <div id="savedGroups"></div>
+        </article>
+      </section>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Combined Group Recommendations</h2>
+        <div class="field" style="max-width: 360px;">
+          <label for="groupRecommendationSelect">Select Group</label>
+          <select id="groupRecommendationSelect"></select>
+        </div>
+        <div id="groupRecommendations"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
+  <script src="../assets/js/diner.js"></script>
+  <script>
+    if (window.appAuth.requireRole("diner")) {
+      window.dinerPortal.initGroups();
+    }
+  </script>
+</body>
+</html>
+
+
+
+
