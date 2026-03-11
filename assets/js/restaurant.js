@@ -37,6 +37,16 @@
       .filter(Boolean);
   }
 
+  function uniqueList(values) {
+    var map = {};
+    return (values || []).filter(function (item) {
+      var key = normalize(item);
+      if (!key || map[key]) return false;
+      map[key] = true;
+      return true;
+    });
+  }
+
   function nowIso() {
     return new Date().toISOString();
   }
@@ -216,6 +226,125 @@
 
     write(KEYS.restaurants, restaurants);
     return { ok: true, item: item };
+  }
+
+  function toNumber(value, fallback) {
+    var num = Number(value);
+    return Number.isFinite(num) && num > 0 ? num : (fallback || 0);
+  }
+
+  function sanitizeImportedItem(raw) {
+    var allergyTags = uniqueList((raw && raw.allergyTags) || []).map(normalize).filter(Boolean);
+    return {
+      name: clean(raw && raw.name),
+      price: toNumber(raw && raw.price, 10.5),
+      ingredients: clean(raw && raw.ingredients) || "Imported from uploaded PDF.",
+      quantityInfo: clean(raw && raw.quantityInfo),
+      dishTags: uniqueList((raw && raw.dishTags) || []),
+      allergyTags: allergyTags,
+      availability: clean(raw && raw.availability) || "available"
+    };
+  }
+
+  function importMenuItems(payloadItems, mode) {
+    var restaurant = ensureOwnerRestaurant();
+    if (!restaurant) {
+      return { ok: false, message: "Restaurant context missing." };
+    }
+
+    var rows = Array.isArray(payloadItems) ? payloadItems : [];
+    if (!rows.length) {
+      return {
+        ok: true,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        duplicateInputs: 0
+      };
+    }
+
+    var restaurants = read(KEYS.restaurants, []);
+    var record = restaurants.find(function (item) { return item.id === restaurant.id; });
+    if (!record) {
+      return { ok: false, message: "Restaurant record missing." };
+    }
+
+    record.menu = Array.isArray(record.menu) ? record.menu : [];
+
+    var existingByName = {};
+    record.menu.forEach(function (item) {
+      var key = normalize(item && item.name);
+      if (key && !existingByName[key]) {
+        existingByName[key] = item;
+      }
+      item.dishTags = uniqueList(item.dishTags || []);
+      item.allergyTags = uniqueList(item.allergyTags || []).map(normalize).filter(Boolean);
+      item.availability = clean(item.availability) || "available";
+    });
+
+    var appendOnly = normalize(mode) === "append";
+    var created = 0;
+    var updated = 0;
+    var skipped = 0;
+    var duplicateInputs = 0;
+    var seenImportNames = {};
+
+    rows.forEach(function (raw) {
+      var item = sanitizeImportedItem(raw);
+      var nameKey = normalize(item.name);
+      if (!nameKey) {
+        skipped += 1;
+        return;
+      }
+
+      if (seenImportNames[nameKey]) {
+        duplicateInputs += 1;
+        return;
+      }
+      seenImportNames[nameKey] = true;
+
+      var existing = existingByName[nameKey] || null;
+      if (existing) {
+        if (appendOnly) {
+          skipped += 1;
+          return;
+        }
+
+        existing.price = toNumber(item.price, existing.price);
+        existing.ingredients = item.ingredients || existing.ingredients || "";
+        existing.quantityInfo = item.quantityInfo || existing.quantityInfo || "";
+        existing.dishTags = uniqueList((existing.dishTags || []).concat(item.dishTags || []));
+        existing.allergyTags = uniqueList((existing.allergyTags || []).concat(item.allergyTags || []))
+          .map(normalize)
+          .filter(Boolean);
+        existing.availability = item.availability || existing.availability || "available";
+        updated += 1;
+        return;
+      }
+
+      var createdItem = {
+        id: uid("menu"),
+        name: item.name,
+        price: item.price,
+        ingredients: item.ingredients,
+        quantityInfo: item.quantityInfo,
+        dishTags: item.dishTags,
+        allergyTags: item.allergyTags,
+        availability: item.availability
+      };
+      record.menu.push(createdItem);
+      existingByName[nameKey] = createdItem;
+      created += 1;
+    });
+
+    write(KEYS.restaurants, restaurants);
+    return {
+      ok: true,
+      created: created,
+      updated: updated,
+      skipped: skipped,
+      duplicateInputs: duplicateInputs
+    };
   }
 
   function deleteMenuItem(itemId) {
@@ -438,6 +567,8 @@
     var form = document.getElementById("menuForm");
     var msg = document.getElementById("menuMessage");
     var resetBtn = document.getElementById("menuResetBtn");
+    var importForm = document.getElementById("menuImportForm");
+    var importMsg = document.getElementById("menuImportMessage");
 
     function renderMenu() {
       var latest = ensureOwnerRestaurant();
@@ -517,6 +648,80 @@
     });
 
     resetBtn.addEventListener("click", clearForm);
+
+    if (importForm && importMsg) {
+      importForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var fileInput = document.getElementById("menuPdfFile");
+        var modeInput = document.getElementById("menuImportMode");
+        var file = fileInput && fileInput.files && fileInput.files[0];
+        var mode = clean(modeInput && modeInput.value) || "merge";
+        var submitBtn = importForm.querySelector('button[type="submit"]');
+
+        if (!file) {
+          importMsg.className = "form-message error";
+          importMsg.textContent = "Please select a PDF file first.";
+          return;
+        }
+
+        if (!window.recommendationService || !window.recommendationService.extractMenuFromPdf) {
+          importMsg.className = "form-message error";
+          importMsg.textContent = "AI importer is unavailable. Please reload and try again.";
+          return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+        importMsg.className = "form-message";
+        importMsg.textContent = "Reading PDF and importing menu...";
+
+        window.recommendationService.extractMenuFromPdf(file).then(function (result) {
+          var items = (result && result.items) || [];
+          var parserSummary = (result && result.summary) || {};
+
+          if (!items.length) {
+            importMsg.className = normalize(result && result.notes).indexOf("start ai service") >= 0
+              ? "form-message error"
+              : "form-message";
+            importMsg.textContent = (result && result.notes) || "No menu rows detected in this PDF.";
+            return;
+          }
+
+          var importResult = importMenuItems(items, mode);
+
+          if (!importResult.ok) {
+            importMsg.className = "form-message error";
+            importMsg.textContent = importResult.message || "Import failed.";
+            return;
+          }
+
+          var parserDuplicates = Number(parserSummary.duplicatesRemoved || 0);
+          var parts = [
+            "Imported " + importResult.created + " new",
+            "updated " + importResult.updated,
+            "skipped " + importResult.skipped
+          ];
+
+          if (importResult.duplicateInputs || parserDuplicates) {
+            parts.push("duplicates removed " + (importResult.duplicateInputs + parserDuplicates));
+          }
+
+          if (result && result.notes) {
+            parts.push(result.notes);
+          }
+
+          importMsg.className = "form-message ok";
+          importMsg.textContent = parts.join(" | ") + ".";
+          renderMenu();
+          importForm.reset();
+        }).catch(function (error) {
+          importMsg.className = "form-message error";
+          importMsg.textContent = (error && error.message) ? error.message : "Could not import menu from this PDF.";
+        }).then(function () {
+          if (submitBtn) submitBtn.disabled = false;
+        });
+      });
+    }
+
     clearForm();
     renderMenu();
   }

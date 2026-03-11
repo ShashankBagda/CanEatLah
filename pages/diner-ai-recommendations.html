@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Recommendations | CanEatLah</title>
+  <title>Redirecting | CanEatLah</title>
+  <meta http-equiv="refresh" content="0;url=diner-restaurants.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -15,92 +16,17 @@
   <link rel="stylesheet" href="../assets/css/portal.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="../index.html"><span class="brand-dot"></span><span>CanEatLah</span></a>
-      <nav class="header-nav">
-        <span class="status soft">Diner: <span id="dinerName">-</span></span>
-        <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
-      </nav>
-    </div>
-  </header>
-
   <main class="portal-shell">
     <section class="container">
-      <div class="portal-top">
-        <div><h1>AI Recommendations</h1><p>Get ranked "what to eat + where to eat" suggestions using preferences, allergies, history, and group context.</p></div>
-      </div>
-
-      <nav class="portal-nav">
-        <a href="diner-dashboard.html">Dashboard</a>
-        <a href="diner-survey.html">Survey</a>
-        <a href="diner-medical-upload.html">Medical Reports</a>
-        <a href="diner-restaurants.html">Restaurants</a>
-        <a class="active" href="diner-ai-recommendations.html">AI Recommendations</a>
-        <a href="diner-groups.html">Groups</a>
-        <a href="diner-order-history.html">Order History</a>
-        <a href="diner-profile.html">Profile</a>
-      </nav>
-
-      <article class="card panel">
-        <h2>Recommendation Inputs</h2>
-        <div class="search-grid">
-          <div class="field">
-            <label for="aiSearchText">Search</label>
-            <input id="aiSearchText" type="text" placeholder="restaurant, cuisine, location" />
-          </div>
-          <div class="field">
-            <label for="aiCuisineFilter">Cuisine</label>
-            <select id="aiCuisineFilter"></select>
-          </div>
-          <div class="field">
-            <label for="aiBudgetFilter">Budget</label>
-            <select id="aiBudgetFilter">
-              <option value="">Any budget</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="aiGroupFilter">Group Context</label>
-            <select id="aiGroupFilter"></select>
-          </div>
-          <button id="aiRunBtn" class="btn btn-primary" type="button">Run AI</button>
-        </div>
-        <div class="inline-actions" style="margin-top: 0.6rem;">
-          <label><input id="aiSafeOnly" type="checkbox" checked /> Show only restaurants with safe menu items</label>
-        </div>
+      <article class="card panel" style="margin-top: 2rem;">
+        <h1>AI recommendations moved</h1>
+        <p>Recommendations are now combined into the Restaurants page.</p>
+        <a class="btn btn-primary" href="diner-restaurants.html">Go to Restaurants</a>
       </article>
-
-      <section class="two-col" style="margin-top: 0.9rem;">
-        <article class="card panel">
-          <h3>Allergy Context Used</h3>
-          <div class="chip-row" id="aiAllergyContext"></div>
-        </article>
-        <article class="card panel">
-          <h3>Preference Context Used</h3>
-          <div class="chip-row" id="aiPreferenceContext"></div>
-          <p class="small-note">Active Group: <strong id="aiActiveGroupBadge">None</strong></p>
-        </article>
-      </section>
-
-      <section class="panel" style="padding: 0; margin-top: 0.9rem;" id="aiResults"></section>
     </section>
   </main>
-
-  <script src="../assets/js/storage.js"></script>
-  <script src="../assets/js/auth.js"></script>
-  <script src="../assets/js/navigation.js"></script>
-  <script src="../assets/js/experience.js"></script>
-  <script src="../assets/js/recommendation.js"></script>
-  <script src="../assets/js/diner.js"></script>
   <script>
-    if (window.appAuth.requireRole("diner")) {
-      window.dinerPortal.initAiRecommendations();
-    }
+    window.location.replace("diner-restaurants.html");
   </script>
 </body>
 </html>
-
-

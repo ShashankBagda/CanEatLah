@@ -8,6 +8,9 @@
     activeGroups: "can_eat_lah_active_groups"
   };
 
+  var GROUP_CONTEXT_ACTIVE = "__active__";
+  var GROUP_CONTEXT_NONE = "__none__";
+
   function read(key, fallback) {
     try {
       var value = localStorage.getItem(key);
@@ -273,6 +276,16 @@
     });
   }
 
+  function mergeProfileAllergies(allergyList) {
+    var normalized = uniqueValues((allergyList || []).map(function (item) {
+      return titleCase(item);
+    }));
+    if (!normalized.length) return;
+    updateUser(function (u) {
+      u.profile.allergies = uniqueValues((u.profile.allergies || []).concat(normalized));
+    });
+  }
+
   function getReports() {
     var current = ensureDiner();
     if (!current) return [];
@@ -418,6 +431,48 @@
     return { ok: true, group: hydrateGroup(group) };
   }
 
+  function updateGroupRecord(groupId, mutator) {
+    var current = ensureDiner();
+    if (!current) return { ok: false, message: "Sign in required." };
+    var groups = read(KEYS.groups, []);
+    var index = groups.findIndex(function (item) {
+      return item.ownerId === current.id && item.id === groupId;
+    });
+    if (index < 0) return { ok: false, message: "Group not found." };
+
+    mutator(groups[index]);
+    write(KEYS.groups, groups);
+    return { ok: true, group: hydrateGroup(groups[index]) };
+  }
+
+  function addMemberToGroup(groupId, userId) {
+    var member = getUserById(userId);
+    if (!member || member.role !== "diner") {
+      return { ok: false, message: "Selected member is not a valid diner." };
+    }
+
+    return updateGroupRecord(groupId, function (group) {
+      group.memberUserIds = Array.isArray(group.memberUserIds) ? group.memberUserIds : [];
+      if (group.memberUserIds.indexOf(userId) < 0) {
+        group.memberUserIds.push(userId);
+      }
+      group.members = resolveGroupMembers(group);
+    });
+  }
+
+  function removeMemberFromGroup(groupId, userId) {
+    var existing = getGroups().find(function (item) { return item.id === groupId; }) || null;
+    if (!existing) return { ok: false, message: "Group not found." };
+    if ((existing.memberUserIds || []).length <= 1) {
+      return { ok: false, message: "A group must have at least one member." };
+    }
+
+    return updateGroupRecord(groupId, function (group) {
+      group.memberUserIds = (group.memberUserIds || []).filter(function (id) { return id !== userId; });
+      group.members = resolveGroupMembers(group);
+    });
+  }
+
   function deleteGroup(groupId) {
     var current = ensureDiner();
     if (!current) return;
@@ -456,9 +511,15 @@
     (profile.allergies || []).forEach(function (item) { allergies[normalize(item)] = titleCase(item); });
     (profile.favoriteCuisines || []).forEach(function (item) { cuisines[normalize(item)] = titleCase(item); });
 
-    var group = groupId
-      ? (getGroups().find(function (item) { return item.id === groupId; }) || null)
-      : getActiveGroup();
+    var normalizedGroupId = normalize(groupId);
+    var group = null;
+    if (normalizedGroupId === normalize(GROUP_CONTEXT_NONE)) {
+      group = null;
+    } else if (!normalizedGroupId || normalizedGroupId === normalize(GROUP_CONTEXT_ACTIVE)) {
+      group = getActiveGroup();
+    } else {
+      group = getGroups().find(function (item) { return item.id === groupId; }) || null;
+    }
 
     if (group) {
       (group.groupAllergies || []).forEach(function (item) { allergies[normalize(item)] = titleCase(item); });
@@ -757,6 +818,26 @@
     return values.map(function (value) { return '<span class="chip">' + value + "</span>"; }).join("");
   }
 
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function renderAiRecommendedTags(items, limit) {
+    var picks = (items || []).slice(0, Number(limit) || 2);
+    if (!picks.length) {
+      return '<span class="small-note">No safe picks</span>';
+    }
+    return '<div class="ai-rec-list">' + picks.map(function (item) {
+      var name = escapeHtml(item && item.name ? item.name : item);
+      return '<span class="ai-rec-item"><span class="ai-rec-badge">AI Recommended</span><span>' + name + "</span></span>";
+    }).join("") + "</div>";
+  }
+
   function navGreeting() {
     var current = ensureDiner();
     if (current) setText("dinerName", current.fullName);
@@ -772,6 +853,23 @@
       var selected = active && active.id === g.id ? " selected" : "";
       return '<option value="' + g.id + '"' + selected + ">" + g.name + "</option>";
     }).join("");
+  }
+
+  function fillGroupContextSelect(id) {
+    var select = document.getElementById(id);
+    if (!select) return;
+    var groups = getGroups();
+    var active = getActiveGroup();
+    var activeLabel = active ? "Use active group (" + active.name + ")" : "Use active group (none selected)";
+
+    select.innerHTML =
+      '<option value="' + GROUP_CONTEXT_ACTIVE + '">' + activeLabel + "</option>" +
+      '<option value="' + GROUP_CONTEXT_NONE + '">No group context</option>' +
+      groups.map(function (group) {
+        return '<option value="' + group.id + '">' + group.name + "</option>";
+      }).join("");
+
+    select.value = active ? GROUP_CONTEXT_ACTIVE : GROUP_CONTEXT_NONE;
   }
 
   function initDashboard() {
@@ -802,9 +900,9 @@
         return;
       }
       setHtml("recommendList", '<ul class="list-clean">' + rec.map(function (item) {
-        var safe = (item.recommendedItems || item.safeMenu || []).slice(0, 2).map(function (m) { return m.name; }).join(", ");
+        var safe = renderAiRecommendedTags(item.recommendedItems || item.safeMenu || [], 2);
         var why = (item.reasons || []).slice(0, 2).join(", ");
-        return "<li><strong>" + item.restaurant.name + "</strong> | " + item.restaurant.cuisine + '<div class="small-note">Safe picks: ' + (safe || "No safe picks") + "</div>" + (why ? '<div class="small-note">Why: ' + why + "</div>" : "") + "</li>";
+        return "<li><strong>" + item.restaurant.name + "</strong> | " + item.restaurant.cuisine + '<div class="small-note"><strong>Safe picks:</strong></div>' + safe + (why ? '<div class="small-note">Why: ' + why + "</div>" : "") + "</li>";
       }).join("") + "</ul>");
     });
 
@@ -905,21 +1003,89 @@
     navGreeting();
     var form = document.getElementById("reportForm");
     var msg = document.getElementById("reportMessage");
+    var autoExtractBtn = document.getElementById("autoExtractBtn");
+    var autoExtracted = [];
     if (!form) return;
     renderReports();
+
+    function showMessage(type, text) {
+      msg.className = "form-message " + type;
+      msg.textContent = text;
+    }
+
+    function runAutoExtraction() {
+      var fileObj = form.reportFile.files && form.reportFile.files[0];
+      if (!fileObj) {
+        showMessage("error", "Attach a PDF file first to auto read allergies.");
+        return;
+      }
+      if (!/\.pdf$/i.test(fileObj.name || "")) {
+        showMessage("error", "Auto read currently supports PDF files.");
+        return;
+      }
+      if (!window.recommendationService || !window.recommendationService.extractAllergiesFromReport) {
+        showMessage("error", "AI service module unavailable.");
+        return;
+      }
+
+      autoExtractBtn.disabled = true;
+      showMessage("ok", "Reading PDF and extracting allergies...");
+
+      window.recommendationService.extractAllergiesFromReport(fileObj).then(function (response) {
+        var parsed = uniqueValues(((response && response.allergies) || []).map(function (item) {
+          return titleCase(item);
+        }));
+        autoExtracted = parsed;
+
+        var current = csv(form.extractedAllergies.value).map(function (item) {
+          return titleCase(item);
+        });
+        var combined = uniqueValues(current.concat(parsed));
+        form.extractedAllergies.value = combined.join(", ");
+
+        var confidence = response && typeof response.confidence === "number" ? response.confidence : 0;
+        var detail = parsed.length
+          ? "Detected " + parsed.length + " allergy tags (confidence " + Math.round(confidence * 100) + "%)."
+          : "No allergy terms detected from this PDF.";
+        if (response && response.notes) detail += " " + response.notes;
+        showMessage(parsed.length ? "ok" : "error", detail);
+      }).catch(function () {
+        showMessage("error", "Could not auto read this PDF. You can still enter allergies manually.");
+      }).finally(function () {
+        autoExtractBtn.disabled = false;
+      });
+    }
+
+    if (autoExtractBtn) {
+      autoExtractBtn.addEventListener("click", runAutoExtraction);
+    }
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var file = form.reportFile.files && form.reportFile.files[0] ? form.reportFile.files[0].name : clean(form.reportName.value);
       if (!file) {
-        msg.className = "form-message error";
-        msg.textContent = "Attach a file or provide report name.";
+        showMessage("error", "Attach a file or provide report name.");
         return;
       }
-      addReport({ fileName: file, extractedAllergies: csv(form.extractedAllergies.value), notes: clean(form.notes.value) });
+
+      var manual = csv(form.extractedAllergies.value).map(function (item) {
+        return titleCase(item);
+      });
+      var extracted = uniqueValues(manual.concat(autoExtracted));
+
+      addReport({
+        fileName: file,
+        extractedAllergies: extracted,
+        notes: clean(form.notes.value)
+      });
+
+      if (extracted.length) {
+        mergeProfileAllergies(extracted);
+      }
+
       form.reset();
-      msg.className = "form-message ok";
-      msg.textContent = "Report uploaded and sent for verification.";
+      autoExtracted = [];
+      showMessage("ok", "Report uploaded. Allergy profile updated with " + extracted.length + " unique tags.");
       renderReports();
     });
   }
@@ -927,7 +1093,7 @@
   function initRestaurants() {
     navGreeting();
     seedRestaurants();
-    fillGroupSelect("groupFilter", "Use active or none");
+    fillGroupContextSelect("groupFilter");
 
     var cuisine = document.getElementById("cuisineFilter");
     var unique = {};
@@ -936,8 +1102,12 @@
       return '<option value="' + name + '">' + name + "</option>";
     }).join("");
 
+    var pendingTimer = null;
+    var requestCounter = 0;
+
     function render() {
       var groupId = clean(document.getElementById("groupFilter").value);
+      var requestId = ++requestCounter;
       setHtml("restaurantResults", '<div class="empty">Loading recommendations...</div>');
       return searchRestaurants({
         searchText: clean(document.getElementById("searchText").value),
@@ -946,6 +1116,7 @@
         groupId: groupId,
         safeOnly: document.getElementById("safeOnly").checked
       }).then(function (result) {
+        if (requestId !== requestCounter) return;
         setHtml("allergyContext", renderChips(result.context.allergies));
         setHtml("preferenceContext", renderChips(result.context.favoriteCuisines));
         setText("activeGroupBadge", result.context.group ? result.context.group.name : "None");
@@ -955,25 +1126,40 @@
           return;
         }
 
-        var groupParam = groupId || (result.context.group ? result.context.group.id : "");
+        var groupParam = (groupId && groupId !== GROUP_CONTEXT_ACTIVE && groupId !== GROUP_CONTEXT_NONE)
+          ? groupId
+          : (result.context.group ? result.context.group.id : "");
         setHtml("restaurantResults", '<div class="restaurant-grid">' + result.results.map(function (entry) {
           var r = entry.restaurant;
           var query = groupParam ? "&group=" + encodeURIComponent(groupParam) : "";
-          var picks = (entry.recommendedItems || entry.safeMenu || []).slice(0, 2).map(function (item) { return item.name; }).join(", ");
+          var picks = renderAiRecommendedTags(entry.recommendedItems || entry.safeMenu || [], 2);
           var why = (entry.reasons || []).slice(0, 2).join(", ");
-          return '<article class="card restaurant-card"><h3>' + r.name + '</h3><div class="restaurant-meta"><span class="chip">' + r.cuisine + '</span><span class="chip">' + r.location + '</span><span class="chip">Price: ' + titleCase(r.priceBand) + '</span><span class="chip">Rating ' + r.rating + '</span></div><p>' + r.description + '</p><div class="inline-actions"><span class="' + (entry.safeMenu.length ? "pill-ok" : "pill-warn") + '">' + entry.safeMenu.length + ' safe items</span><span class="' + (entry.conflicts.length ? "pill-warn" : "pill-ok") + '">' + entry.conflicts.length + ' conflict items</span></div><div class="small-note">What to eat: ' + (picks || "No safe picks") + '</div>' + (why ? '<div class="small-note">Why: ' + why + '</div>' : '') + '<div class="split-actions"><a class="btn btn-primary" href="diner-restaurant-detail.html?id=' + r.id + query + '">View Menu</a></div></article>';
+          return '<article class="card restaurant-card"><h3>' + r.name + '</h3><div class="restaurant-meta"><span class="chip">' + r.cuisine + '</span><span class="chip">' + r.location + '</span><span class="chip">Price: ' + titleCase(r.priceBand) + '</span><span class="chip">Rating ' + r.rating + '</span></div><p>' + r.description + '</p><div class="inline-actions"><span class="' + (entry.safeMenu.length ? "pill-ok" : "pill-warn") + '">' + entry.safeMenu.length + ' safe items</span><span class="' + (entry.conflicts.length ? "pill-warn" : "pill-ok") + '">' + entry.conflicts.length + ' conflict items</span></div><div class="small-note"><strong>What to eat:</strong></div>' + picks + (why ? '<div class="small-note">Why: ' + why + '</div>' : '') + '<div class="split-actions"><a class="btn btn-primary" href="diner-restaurant-detail.html?id=' + r.id + query + '">View Menu</a></div></article>';
         }).join("") + "</div>");
+      }).catch(function () {
+        if (requestId !== requestCounter) return;
+        setHtml("restaurantResults", '<div class="empty">Could not load recommendations right now.</div>');
       });
     }
 
+    function scheduleRender() {
+      if (pendingTimer) clearTimeout(pendingTimer);
+      pendingTimer = setTimeout(render, 220);
+    }
+
     document.getElementById("searchBtn").addEventListener("click", render);
+    document.getElementById("searchText").addEventListener("input", scheduleRender);
+    document.getElementById("cuisineFilter").addEventListener("change", render);
+    document.getElementById("budgetFilter").addEventListener("change", render);
+    document.getElementById("groupFilter").addEventListener("change", render);
+    document.getElementById("safeOnly").addEventListener("change", render);
     render();
   }
 
   function initAiRecommendations() {
     navGreeting();
     seedRestaurants();
-    fillGroupSelect("aiGroupFilter", "Use active or none");
+    fillGroupContextSelect("aiGroupFilter");
 
     var cuisine = document.getElementById("aiCuisineFilter");
     var unique = {};
@@ -1001,13 +1187,15 @@
           return;
         }
 
-        var groupParam = groupId || (result.context.group ? result.context.group.id : "");
+        var groupParam = (groupId && groupId !== GROUP_CONTEXT_ACTIVE && groupId !== GROUP_CONTEXT_NONE)
+          ? groupId
+          : (result.context.group ? result.context.group.id : "");
         setHtml("aiResults", '<div class="restaurant-grid">' + result.results.map(function (entry) {
           var r = entry.restaurant;
-          var picks = (entry.recommendedItems || entry.safeMenu || []).slice(0, 3).map(function (item) { return item.name; }).join(", ");
+          var picks = renderAiRecommendedTags(entry.recommendedItems || entry.safeMenu || [], 3);
           var why = (entry.reasons || []).join(", ");
           var query = groupParam ? "&group=" + encodeURIComponent(groupParam) : "";
-          return '<article class="card restaurant-card"><h3>' + r.name + '</h3><div class="restaurant-meta"><span class="chip">' + r.cuisine + '</span><span class="chip">' + r.location + '</span><span class="chip">Price: ' + titleCase(r.priceBand) + '</span><span class="chip">Score ' + entry.score + '</span></div><p>' + r.description + '</p><div class="small-note"><strong>What to eat:</strong> ' + (picks || "No safe picks") + '</div><div class="small-note"><strong>Why suggested:</strong> ' + (why || "General safe match") + '</div><div class="inline-actions"><span class="' + (entry.safeMenu.length ? "pill-ok" : "pill-warn") + '">' + entry.safeMenu.length + ' safe items</span><span class="' + (entry.conflicts.length ? "pill-warn" : "pill-ok") + '">' + entry.conflicts.length + ' conflict items</span></div><div class="split-actions"><a class="btn btn-primary" href="diner-restaurant-detail.html?id=' + r.id + query + '">Open Menu</a><a class="btn btn-secondary" href="diner-restaurants.html">Back To Search</a></div></article>';
+          return '<article class="card restaurant-card"><h3>' + r.name + '</h3><div class="restaurant-meta"><span class="chip">' + r.cuisine + '</span><span class="chip">' + r.location + '</span><span class="chip">Price: ' + titleCase(r.priceBand) + '</span><span class="chip">Score ' + entry.score + '</span></div><p>' + r.description + '</p><div class="small-note"><strong>What to eat:</strong></div>' + picks + '<div class="small-note"><strong>Why suggested:</strong> ' + (why || "General safe match") + '</div><div class="inline-actions"><span class="' + (entry.safeMenu.length ? "pill-ok" : "pill-warn") + '">' + entry.safeMenu.length + ' safe items</span><span class="' + (entry.conflicts.length ? "pill-warn" : "pill-ok") + '">' + entry.conflicts.length + ' conflict items</span></div><div class="split-actions"><a class="btn btn-primary" href="diner-restaurant-detail.html?id=' + r.id + query + '">Open Menu</a><a class="btn btn-secondary" href="diner-restaurants.html">Back To Search</a></div></article>';
         }).join("") + "</div>");
       });
     }
@@ -1154,6 +1342,18 @@
     var lookupResults = document.getElementById("lookupResults");
     var groupForm = document.getElementById("groupForm");
     var recommendationSelect = document.getElementById("groupRecommendationSelect");
+    var editGroupSelect = document.getElementById("editGroupSelect");
+    var editMemberLookupForm = document.getElementById("editMemberLookupForm");
+    var editMemberLookup = document.getElementById("editMemberLookup");
+    var editLookupResults = document.getElementById("editLookupResults");
+    var editGroupMembers = document.getElementById("editGroupMembers");
+    var editGroupMessage = document.getElementById("editGroupMessage");
+
+    function setEditMessage(type, text) {
+      if (!editGroupMessage) return;
+      editGroupMessage.className = "form-message " + type;
+      editGroupMessage.textContent = text;
+    }
 
     function groupRecommendations(groupId) {
       if (!groupId) {
@@ -1174,10 +1374,106 @@
         }
 
         setHtml("groupRecommendations", '<ul class="list-clean">' + result.results.slice(0, 5).map(function (entry) {
-          var picks = (entry.recommendedItems || entry.safeMenu || []).slice(0, 2).map(function (item) { return item.name; }).join(", ");
+          var picks = renderAiRecommendedTags(entry.recommendedItems || entry.safeMenu || [], 2);
           var why = (entry.reasons || []).slice(0, 2).join(", ");
-          return '<li><strong>' + entry.restaurant.name + '</strong> | ' + entry.restaurant.cuisine + '<div class="small-note">What to eat: ' + (picks || "No safe picks") + '</div>' + (why ? '<div class="small-note">Why: ' + why + "</div>" : "") + '</li>';
+          return '<li><strong>' + entry.restaurant.name + '</strong> | ' + entry.restaurant.cuisine + '<div class="small-note"><strong>What to eat:</strong></div>' + picks + (why ? '<div class="small-note">Why: ' + why + "</div>" : "") + '</li>';
         }).join("") + "</ul>");
+      });
+    }
+
+    function currentEditGroup() {
+      if (!editGroupSelect) return null;
+      var groupId = clean(editGroupSelect.value);
+      if (!groupId) return null;
+      return getGroups().find(function (item) { return item.id === groupId; }) || null;
+    }
+
+    function renderEditGroupSelect(preferredGroupId) {
+      if (!editGroupSelect) return;
+      var groups = getGroups();
+      editGroupSelect.innerHTML =
+        '<option value="">Select group</option>' +
+        groups.map(function (group) {
+          return '<option value="' + group.id + '">' + group.name + "</option>";
+        }).join("");
+
+      var active = getActiveGroup();
+      var target = preferredGroupId || (active && active.id) || (groups[0] && groups[0].id) || "";
+      editGroupSelect.value = target || "";
+      renderEditableMembers();
+      renderEditLookupResults();
+    }
+
+    function renderEditableMembers() {
+      if (!editGroupMembers) return;
+      var group = currentEditGroup();
+      if (!group) {
+        setHtml("editGroupMembers", '<div class="empty">Select a group to edit members.</div>');
+        return;
+      }
+
+      setHtml("editGroupMembers", '<ul class="list-clean">' + (group.members || []).map(function (member) {
+        return '<li><strong>@' + (member.username || "user") + '</strong> | ' + member.name + '<div class="small-note">Phone: ' + (member.phone || "-") + '</div><div class="small-note">Allergies: ' + ((member.allergies || []).join(", ") || "None") + '</div><div class="split-actions"><button class="btn btn-secondary edit-rm-member" data-id="' + member.userId + '">Remove</button></div></li>';
+      }).join("") + "</ul>");
+
+      Array.prototype.slice.call(document.querySelectorAll(".edit-rm-member")).forEach(function (button) {
+        button.addEventListener("click", function () {
+          var selectedGroup = currentEditGroup();
+          if (!selectedGroup) return;
+          var result = removeMemberFromGroup(selectedGroup.id, button.getAttribute("data-id"));
+          if (!result.ok) {
+            setEditMessage("error", result.message);
+            return;
+          }
+          setEditMessage("ok", "Member removed from group.");
+          renderGroups();
+          renderRecommendationSelect();
+          renderEditGroupSelect(selectedGroup.id);
+          groupRecommendations(clean(recommendationSelect.value || selectedGroup.id));
+        });
+      });
+    }
+
+    function renderEditLookupResults() {
+      if (!editLookupResults || !editMemberLookup) return;
+      var selectedGroup = currentEditGroup();
+      if (!selectedGroup) {
+        setHtml("editLookupResults", '<div class="empty">Select a group first to add members.</div>');
+        return;
+      }
+
+      var term = clean(editMemberLookup.value);
+      if (!term) {
+        setHtml("editLookupResults", '<div class="empty">Search by username or phone to add members.</div>');
+        return;
+      }
+
+      var existingIds = selectedGroup.memberUserIds || [];
+      var found = searchDinersByIdentifier(term, existingIds);
+      if (!found.length) {
+        setHtml("editLookupResults", '<div class="empty">No additional diner found for this term.</div>');
+        return;
+      }
+
+      setHtml("editLookupResults", '<ul class="list-clean">' + found.map(function (member) {
+        return '<li><strong>@' + (member.username || "user") + '</strong> | ' + member.name + '<div class="small-note">Phone: ' + (member.phone || "-") + '</div><div class="small-note">Allergies: ' + ((member.allergies || []).join(", ") || "None") + '</div><div class="split-actions"><button class="btn btn-secondary edit-add-member" data-id="' + member.userId + '">Add To Group</button></div></li>';
+      }).join("") + "</ul>");
+
+      Array.prototype.slice.call(document.querySelectorAll(".edit-add-member")).forEach(function (button) {
+        button.addEventListener("click", function () {
+          var group = currentEditGroup();
+          if (!group) return;
+          var result = addMemberToGroup(group.id, button.getAttribute("data-id"));
+          if (!result.ok) {
+            setEditMessage("error", result.message);
+            return;
+          }
+          setEditMessage("ok", "Member added to group.");
+          renderGroups();
+          renderRecommendationSelect();
+          renderEditGroupSelect(group.id);
+          groupRecommendations(clean(recommendationSelect.value || group.id));
+        });
       });
     }
 
@@ -1252,7 +1548,7 @@
         var usernames = (group.members || []).map(function (member) {
           return "@" + (member.username || member.name || "member");
         }).join(", ");
-        return '<article class="card panel"><h3>' + group.name + activeBadge + '</h3><p>Members: ' + group.members.length + '</p><div class="small-note">Usernames: ' + (usernames || "-") + '</div><div class="small-note">Combined Allergies: ' + (group.groupAllergies.join(", ") || "None") + '</div><div class="small-note">Combined Preferences: ' + (group.groupPreferences.join(", ") || "None") + '</div><div class="split-actions"><button class="btn btn-secondary set-active" data-id="' + group.id + '">Set Active</button><button class="btn btn-secondary quick-rec" data-id="' + group.id + '">View Recommendations</button><button class="btn btn-secondary del-group" data-id="' + group.id + '">Delete</button></div></article>';
+        return '<article class="card panel"><h3>' + group.name + activeBadge + '</h3><p>Members: ' + group.members.length + '</p><div class="small-note">Usernames: ' + (usernames || "-") + '</div><div class="small-note">Combined Allergies: ' + (group.groupAllergies.join(", ") || "None") + '</div><div class="small-note">Combined Preferences: ' + (group.groupPreferences.join(", ") || "None") + '</div><div class="split-actions"><button class="btn btn-secondary set-active" data-id="' + group.id + '">Set Active</button><button class="btn btn-secondary quick-rec" data-id="' + group.id + '">View Recommendations</button><button class="btn btn-secondary edit-group" data-id="' + group.id + '">Edit Members</button><button class="btn btn-secondary del-group" data-id="' + group.id + '">Delete</button></div></article>';
       }).join("") + "</div>");
 
       Array.prototype.slice.call(document.querySelectorAll(".set-active")).forEach(function (button) {
@@ -1269,11 +1565,22 @@
           groupRecommendations(button.getAttribute("data-id"));
         });
       });
+      Array.prototype.slice.call(document.querySelectorAll(".edit-group")).forEach(function (button) {
+        button.addEventListener("click", function () {
+          var groupId = button.getAttribute("data-id");
+          if (editGroupSelect) {
+            editGroupSelect.value = groupId;
+            renderEditableMembers();
+            renderEditLookupResults();
+          }
+        });
+      });
       Array.prototype.slice.call(document.querySelectorAll(".del-group")).forEach(function (button) {
         button.addEventListener("click", function () {
           deleteGroup(button.getAttribute("data-id"));
           renderGroups();
           renderRecommendationSelect();
+          renderEditGroupSelect();
         });
       });
     }
@@ -1348,17 +1655,54 @@
       renderLookupResults();
       renderGroups();
       renderRecommendationSelect();
+      renderEditGroupSelect(result.group ? result.group.id : "");
     });
 
     lookupInput.addEventListener("input", renderLookupResults);
     recommendationSelect.addEventListener("change", function () {
       groupRecommendations(clean(recommendationSelect.value));
     });
+    if (editGroupSelect) {
+      editGroupSelect.addEventListener("change", function () {
+        renderEditableMembers();
+        renderEditLookupResults();
+      });
+    }
+    if (editMemberLookup) {
+      editMemberLookup.addEventListener("input", renderEditLookupResults);
+    }
+    if (editMemberLookupForm) {
+      editMemberLookupForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var group = currentEditGroup();
+        if (!group) {
+          setEditMessage("error", "Select a group first.");
+          return;
+        }
+        var term = clean(editMemberLookup.value);
+        var found = searchDinersByIdentifier(term, group.memberUserIds || []);
+        if (!found.length) {
+          setEditMessage("error", "No matching diner found.");
+          return;
+        }
+        var result = addMemberToGroup(group.id, found[0].userId);
+        if (!result.ok) {
+          setEditMessage("error", result.message);
+          return;
+        }
+        setEditMessage("ok", "Member added to group.");
+        renderGroups();
+        renderRecommendationSelect();
+        renderEditGroupSelect(group.id);
+        groupRecommendations(clean(recommendationSelect.value || group.id));
+      });
+    }
 
     renderDraft();
     renderLookupResults();
     renderGroups();
     renderRecommendationSelect();
+    renderEditGroupSelect();
   }
 
   function initOrderHistory() {

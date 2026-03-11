@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from pdf_intelligence import parse_medical_report, parse_menu_pdf
 from recommender import recommend
 
 
@@ -75,3 +76,29 @@ def health() -> Dict[str, str]:
 def recommend_route(request: RecommendRequest) -> Dict[str, Any]:
     payload = request.model_dump()
     return recommend(payload)
+
+
+@app.post("/extract-allergies")
+async def extract_allergies(file: UploadFile = File(...)) -> Dict[str, Any]:
+    file_name = file.filename or "report.pdf"
+    if not file_name.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported for auto extraction.")
+
+    pdf_bytes = await file.read()
+    if not pdf_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+    return parse_medical_report(pdf_bytes=pdf_bytes, filename=file_name)
+
+
+@app.post("/extract-menu")
+async def extract_menu(file: UploadFile = File(...)) -> Dict[str, Any]:
+    file_name = file.filename or "menu.pdf"
+    if not file_name.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported for menu extraction.")
+
+    pdf_bytes = await file.read()
+    if not pdf_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+    return parse_menu_pdf(pdf_bytes=pdf_bytes, filename=file_name)

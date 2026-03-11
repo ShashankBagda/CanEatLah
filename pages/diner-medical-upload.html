@@ -36,7 +36,6 @@
         <a href="diner-survey.html">Survey</a>
         <a class="active" href="diner-medical-upload.html">Medical Reports</a>
         <a href="diner-restaurants.html">Restaurants</a>
-        <a href="diner-ai-recommendations.html">AI Recommendations</a>
         <a href="diner-groups.html">Groups</a>
         <a href="diner-order-history.html">Order History</a>
         <a href="diner-profile.html">Profile</a>
@@ -65,9 +64,11 @@
             <textarea id="notes" name="notes" rows="3" placeholder="Any notes for verification"></textarea>
           </div>
 
-          <div class="form-actions">
+          <div class="form-actions inline-actions">
+            <button type="button" id="autoExtractBtn" class="btn btn-secondary">Auto Read PDF</button>
             <button type="submit" class="btn btn-primary">Upload Report</button>
           </div>
+          <p class="small-note">Tip: For best results, upload a text-based PDF report and use auto read before submit.</p>
           <div id="reportMessage" class="form-message" aria-live="polite"></div>
         </form>
       </article>

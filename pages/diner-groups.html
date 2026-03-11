@@ -36,7 +36,6 @@
         <a href="diner-survey.html">Survey</a>
         <a href="diner-medical-upload.html">Medical Reports</a>
         <a href="diner-restaurants.html">Restaurants</a>
-        <a href="diner-ai-recommendations.html">AI Recommendations</a>
         <a class="active" href="diner-groups.html">Groups</a>
         <a href="diner-order-history.html">Order History</a>
         <a href="diner-profile.html">Profile</a>
@@ -76,6 +75,30 @@
           <div id="savedGroups"></div>
         </article>
       </section>
+
+      <article class="card panel" style="margin-top: 0.9rem;">
+        <h2>Edit Group Members</h2>
+        <p class="small-note">Select an existing group, then add or remove members.</p>
+
+        <div class="field" style="max-width: 360px;">
+          <label for="editGroupSelect">Select Group</label>
+          <select id="editGroupSelect"></select>
+        </div>
+
+        <h3 style="margin-top: 1rem;">Current Members</h3>
+        <div id="editGroupMembers"></div>
+
+        <h3 style="margin-top: 1rem;">Add New Member</h3>
+        <form id="editMemberLookupForm" class="form-grid" novalidate>
+          <div class="field">
+            <label for="editMemberLookup">Username / Phone</label>
+            <input id="editMemberLookup" name="editMemberLookup" type="text" placeholder="e.g. @demodiner or 1234567890" />
+          </div>
+          <button type="submit" class="btn btn-secondary">Quick Add First Match</button>
+        </form>
+        <div id="editLookupResults"></div>
+        <div id="editGroupMessage" class="form-message" aria-live="polite"></div>
+      </article>
 
       <article class="card panel" style="margin-top: 0.9rem;">
         <h2>Combined Group Recommendations</h2>

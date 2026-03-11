@@ -38,6 +38,30 @@
         <a href="restaurant-reservations.html">Reservations</a>
       </nav>
 
+      <article class="card panel" style="margin-bottom: 0.9rem;">
+        <h2>Auto Import Menu From PDF</h2>
+        <form id="menuImportForm" class="form-grid" novalidate>
+          <div class="inline-two">
+            <div class="field">
+              <label for="menuPdfFile">Upload Menu/Allergen PDF</label>
+              <input id="menuPdfFile" name="menuPdfFile" type="file" accept=".pdf" />
+            </div>
+            <div class="field">
+              <label for="menuImportMode">Import Mode</label>
+              <select id="menuImportMode" name="menuImportMode">
+                <option value="merge">Merge (recommended)</option>
+                <option value="append">Append only</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions inline-actions">
+            <button type="submit" class="btn btn-primary">Auto Read & Import</button>
+          </div>
+          <p class="small-note">The importer removes duplicate dish names and merges allergy tags automatically.</p>
+          <div id="menuImportMessage" class="form-message" aria-live="polite"></div>
+        </form>
+      </article>
+
       <section class="two-col">
         <article class="card panel">
           <h2>Add / Edit Menu Item</h2>
@@ -80,6 +104,7 @@
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/navigation.js"></script>
   <script src="../assets/js/experience.js"></script>
+  <script src="../assets/js/recommendation.js"></script>
   <script src="../assets/js/restaurant.js"></script>
   <script>
     if (window.appAuth.requireRole("restaurant")) {

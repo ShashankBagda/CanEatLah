@@ -120,6 +120,10 @@
     return DEFAULT_ENDPOINT;
   }
 
+  function endpointBase() {
+    return endpoint().replace(/\/recommend\/?$/i, "");
+  }
+
   function withTimeout(promise, timeoutMs) {
     return Promise.race([
       promise,
@@ -155,9 +159,85 @@
     });
   }
 
+  function uploadPdf(path, file, timeoutMs) {
+    if (!file) {
+      return Promise.reject(new Error("No file provided."));
+    }
+    var form = new FormData();
+    form.append("file", file);
+    return withTimeout(
+      fetch(endpointBase() + path, {
+        method: "POST",
+        body: form
+      }).then(function (response) {
+        if (!response.ok) {
+          throw new Error("Upload service error: " + response.status);
+        }
+        return response.json();
+      }),
+      timeoutMs || 12000
+    );
+  }
+
+  function extractAllergiesLocal(file) {
+    var name = normalize(file && file.name);
+    var map = [
+      "peanut",
+      "tree nut",
+      "dairy",
+      "egg",
+      "fish",
+      "shellfish",
+      "soy",
+      "gluten",
+      "sesame",
+      "mustard",
+      "celery"
+    ];
+    var found = map.filter(function (item) {
+      return name.indexOf(item.replace(" ", "")) >= 0 || name.indexOf(item) >= 0;
+    });
+    return {
+      allergies: found.map(function (item) {
+        return item.split(" ").map(function (word) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(" ");
+      }),
+      confidence: found.length ? 0.2 : 0,
+      notes: found.length
+        ? "Low-confidence local extraction based on filename."
+        : "Unable to auto-extract locally. Start AI service for full PDF parsing."
+    };
+  }
+
+  function extractMenuLocal() {
+    return {
+      items: [],
+      summary: {
+        itemsDetected: 0,
+        duplicatesRemoved: 0
+      },
+      notes: "Local fallback cannot parse menu PDFs. Start AI service for full parsing."
+    };
+  }
+
+  function extractAllergiesFromReport(file) {
+    return uploadPdf("/extract-allergies", file, 15000).catch(function () {
+      return extractAllergiesLocal(file);
+    });
+  }
+
+  function extractMenuFromPdf(file) {
+    return uploadPdf("/extract-menu", file, 18000).catch(function () {
+      return extractMenuLocal();
+    });
+  }
+
   window.recommendationService = {
     getRecommendations: recommend,
     getRecommendationsRemote: remoteRecommend,
-    getRecommendationsLocal: localRecommend
+    getRecommendationsLocal: localRecommend,
+    extractAllergiesFromReport: extractAllergiesFromReport,
+    extractMenuFromPdf: extractMenuFromPdf
   };
 })();

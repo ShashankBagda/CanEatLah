@@ -27,6 +27,8 @@ uvicorn app:app --host 127.0.0.1 --port 8000 --reload
 ## Endpoints
 - `GET /health`
 - `POST /recommend`
+- `POST /extract-allergies` (multipart/form-data with `file` PDF)
+- `POST /extract-menu` (multipart/form-data with `file` PDF)
 
 ## Payload shape
 
